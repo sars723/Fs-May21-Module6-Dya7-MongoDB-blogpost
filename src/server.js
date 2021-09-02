@@ -3,6 +3,8 @@ import cors from "cors"
 import listEndPoints from "express-list-endpoints"
 import mongoose from "mongoose"
 import blogsRouter from "./services/blogs/index.js"
+import commentsRouter from "./services/comments/index.js"
+import authorsRouter from "./services/authors/index.js"
 
 const server=express()
 
@@ -12,6 +14,8 @@ server.use(cors())
 server.use(express.json())
 
 server.use("/blogs",blogsRouter)
+server.use("/comments",commentsRouter)
+server.use("/authors", authorsRouter)
 
 mongoose.connect(process.env.MONGO_CONNECTION)
 

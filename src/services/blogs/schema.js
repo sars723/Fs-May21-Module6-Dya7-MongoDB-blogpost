@@ -1,25 +1,7 @@
 import mongoose from 'mongoose'
 
-
-
 const {Schema,model}=mongoose
-/* {
-    "_id": "MONGO GENERATED ID",
-    "category": "ARTICLE CATEGORY",
-    "title": "ARTICLE TITLE",
-    "cover":"ARTICLE COVER (IMAGE LINK)",
-    "readTime": {
-      "value": 2,
-      "unit": "minute"
-    },
-    "author": {
-      "name": "AUTHOR NAME",
-      "avatar":"AUTHOR AVATAR LINK"
-    },
-    "content": "HTML",
-    "createdAt": "DATE",
-    "updatedAt": "DATE"           
-} */
+
 const blogSchema=new Schema({
 category:{type:String,required:true},
 title:{type:String,required:true},
@@ -32,16 +14,27 @@ readTime:{
         type:String,required:true
     }
 },
-author:{
+authors: [{ type: Schema.Types.ObjectId, ref: "Author" }],
+/* author:{
     name:{
+        type:String,required:true
+    },email:{
         type:String,required:true
     },avatar:{
         type:String,required:true
     }
-},
+} */
 content:{type:String,required:true},
-
-},{
+/* comments:{default:[],type:[commentSchema] */
+comment:[
+    {   
+        user:{name:String,avatar:String},
+        comment:String,
+        rate:Number
+    }
+]
+},
+{
     timestamps:true
 })
 export default model("blog",blogSchema)

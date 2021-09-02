@@ -1,5 +1,5 @@
 import express from "express"
-
+import commentModel from '../comments/schema.js'
 import BlogModel from './schema.js'
 const blogsRouter=express.Router()
 
@@ -18,7 +18,7 @@ blogsRouter.get("/",async(req,res,next)=>{
         const newBlogs=new BlogModel(req.body)
         const {_id}=await newBlogs.save()
         console.log(_id)
-        res.status(201).send({_id})
+        res.status(201).send(newBlogs)
     }catch(error){
         console.log(error)
         next(error)
@@ -66,4 +66,67 @@ if(deletedBlog){
         next(error)
     }
 })
+
+
+blogsRouter.put("/:blogID/comments/commentID",async(req,res,next)=>{
+  
+    const blog=await BlogModel.findById(req.params.blogID)
+    if(blog){
+        const commentIndex=blog.comments.findIndex((comment)=>comment._id.toString()===req.params.commentID)
+        if(commentIndex===-1){
+            res.status(404).send({
+                message: `comment with ${req.params.commentID} is not found!`,
+              });
+        }else{
+
+        }
+        res.send(blog.comments)
+    }else{
+        res
+        .status(404)
+        .send({ message: `blog with ${req.params.id} is not found!` });
+    }
+})
+blogsRouter.get("/:blogID/comments",async(req,res,next)=>{
+    try {
+    const blog=await BlogModel.findById(req.params.blogID)
+    if(blog){
+        res.send(blog.comments)
+    }else{
+        res.status(404).send("not found")
+    }
+    } catch (error) {
+        next(error)
+    }
+})
+
+blogsRouter.post("/:blogID/comments",async(req,res,next)=>{
+    try {
+    const blog=await BlogModel.findById(req.params.blogID)
+    if(blog){
+        await BlogModel.findByIdAndUpdate(req.params.blogID,{$push:{comment:req.body}},{new:true})
+        res.status(204).send(blog.comment)
+    }else{
+        res.status(404).send("not found")
+    }
+    } catch (error) {
+        next(error)
+    }
+})
+
+blogsRouter.delete("/:blogID/comments/:commentID",async(req,res,next)=>{
+    try {
+    const blog=await BlogModel.findById(req.params.blogID)
+    if(blog){
+        await BlogModel.findByIdAndUpdate(req.params.blogID,{$pull:{comments:{_id:req.params.commentID}}},{new:true})
+        res.status(204).send(blog.comments)
+    }else{
+        res.status(404).send("not found")
+    }
+    } catch (error) {
+        next(error)
+    }
+})
+
+
 export default blogsRouter
