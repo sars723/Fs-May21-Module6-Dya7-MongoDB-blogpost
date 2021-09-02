@@ -78,7 +78,12 @@ blogsRouter.put("/:blogID/comments/commentID",async(req,res,next)=>{
                 message: `comment with ${req.params.commentID} is not found!`,
               });
         }else{
-
+            blog.comments[commentIndex] = {
+                ...blog.comments[commentIndex]._doc,
+                ...req.body,
+              };
+              await blog.save();
+              res.status(204).send();
         }
         res.send(blog.comments)
     }else{
@@ -91,7 +96,7 @@ blogsRouter.get("/:blogID/comments",async(req,res,next)=>{
     try {
     const blog=await BlogModel.findById(req.params.blogID)
     if(blog){
-        res.send(blog.comments)
+        res.send(blog.comment)
     }else{
         res.status(404).send("not found")
     }
