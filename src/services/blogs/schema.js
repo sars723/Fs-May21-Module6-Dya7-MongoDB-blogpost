@@ -14,7 +14,7 @@ readTime:{
         type:String,required:true
     }
 },
-authors: [{ type: Schema.Types.ObjectId, ref: "Author" }],
+author: { type: Schema.Types.ObjectId, ref: "Author" },
 /* author:{
     name:{
         type:String,required:true

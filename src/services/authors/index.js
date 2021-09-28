@@ -4,6 +4,7 @@ import { basicAuthMiddleware } from "../../auth/basic.js"
 import { adminOnlyMiddleware } from "../../auth/admin.js"
 
 import AuthorModel from "./schema.js"
+import BlogModel from "../blogs/schema.js"
 
 const authorsRouter = express.Router()
 
@@ -31,6 +32,55 @@ authorsRouter.post("/",basicAuthMiddleware, async (req, res, next) => {
     const { _id } = await newAuthor.save()
 
     res.status(201).send({ _id })
+  } catch (error) {
+    next(error)
+  }
+})
+authorsRouter.get("/me/stories", basicAuthMiddleware, async (req, res, next) => {
+  try {
+    const posts = await BlogModel.find({ author: req.author._id.toString() })
+
+    res.status(200).send(posts)
+
+  } catch (error) {
+    next(error)
+  }
+})
+
+authorsRouter.get("/me",basicAuthMiddleware, async (req, res, next) => {
+  try {
+    res.send(req.author)
+  } catch (error) {
+    next(error)
+  }
+})
+
+authorsRouter.put("/me",basicAuthMiddleware, async (req, res, next) => {
+  try {
+   req.author=req.body
+    await req.author.save()
+
+    res.send(req.author)
+  } catch (error) {
+    next(error)
+  }
+})
+authorsRouter.delete("/me",basicAuthMiddleware, async (req, res, next) => {
+  try {
+    await req.author.deleteOne()
+    res.send("deleted")
+
+    res.send(author)
+  } catch (error) {
+    next(error)
+  }
+})
+
+authorsRouter.get("/:authorID",basicAuthMiddleware,adminOnlyMiddleware, async (req, res, next) => {
+  try {
+    const author = new AuthorModel.findById(req.params.authorID) 
+
+    res.send(author)
   } catch (error) {
     next(error)
   }
