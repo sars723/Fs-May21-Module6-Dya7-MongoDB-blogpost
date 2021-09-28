@@ -5,6 +5,7 @@ import mongoose from "mongoose"
 import blogsRouter from "./services/blogs/index.js"
 import commentsRouter from "./services/comments/index.js"
 import authorsRouter from "./services/authors/index.js"
+import { unauthorizedHandler, forbiddenHandler, catchAllHandler } from "./errorHandlers.js"
 
 const server=express()
 
@@ -16,6 +17,10 @@ server.use(express.json())
 server.use("/blogs",blogsRouter)
 server.use("/comments",commentsRouter)
 server.use("/authors", authorsRouter)
+
+server.use(unauthorizedHandler)
+server.use(forbiddenHandler)
+server.use(catchAllHandler)
 
 mongoose.connect(process.env.MONGO_CONNECTION)
 

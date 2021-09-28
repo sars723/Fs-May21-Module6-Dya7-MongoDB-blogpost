@@ -20,3 +20,4 @@ const commentSchema=new Schema({
 })
 
 export default model("Comment",commentSchema)
+
