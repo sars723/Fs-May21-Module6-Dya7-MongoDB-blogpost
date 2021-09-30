@@ -6,13 +6,16 @@ import blogsRouter from "./services/blogs/index.js"
 import commentsRouter from "./services/comments/index.js"
 import authorsRouter from "./services/authors/index.js"
 import { unauthorizedHandler, forbiddenHandler, catchAllHandler } from "./errorHandlers.js"
+import GoogleStrategy from "./auth/oauth.js"
+import passport from "passport"
 
 const server=express()
-
 const port=process.env.port||3001
+passport.use("google", GoogleStrategy)
 
 server.use(cors())
 server.use(express.json())
+server.use(passport.initialize())
 
 server.use("/blogs",blogsRouter)
 server.use("/comments",commentsRouter)

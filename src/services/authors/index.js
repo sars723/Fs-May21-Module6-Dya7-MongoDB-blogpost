@@ -4,6 +4,8 @@ import { basicAuthMiddleware } from "../../auth/basic.js"
 import { JWTAuthMiddleware } from "../../auth/token.js"
 import { adminOnlyMiddleware } from "../../auth/admin.js"
 import { JWTAuthenticate } from "../../auth/tools.js"
+import createHttpError from "http-errors"
+import passport from "passport"
 
 import AuthorModel from "./schema.js"
 import BlogModel from "../blogs/schema.js"
@@ -78,6 +80,18 @@ authorsRouter.delete("/me",JWTAuthMiddleware, async (req, res, next) => {
   }
 })
 
+
+authorsRouter.get("/googleLogin", passport.authenticate("google", { scope: ["profile", "email"] }))
+
+authorsRouter.get("/googleRedirect", passport.authenticate("google"), async (req, res, next) => {
+  try {
+    console.log("redirect")
+    console.log(req.author)
+    res.redirect(`http://localhost:3000?accessToken=${req.author.tokens.accessToken}&refreshToken=${req.author.tokens.refreshToken}`)
+  } catch (error) {
+    next(error)
+  }
+})
 authorsRouter.get("/:authorID",JWTAuthMiddleware,adminOnlyMiddleware, async (req, res, next) => {
   try {
     const author = new AuthorModel.findById(req.params.authorID) 
